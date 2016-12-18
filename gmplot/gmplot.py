@@ -52,17 +52,24 @@ class GoogleMapPlotter(object):
         color = self.html_color_codes.get(color, color)
         self.points.append((lat, lng, color[1:], title))
 
-    def scatter(self, lats, lngs, color=None, size=None, marker=True, c=None, s=None, **kwargs):
+    def scatter(self, lats, lngs, titles=None, color=None, size=None, marker=True, c=None, s=None, **kwargs):
         color = color or c
         size = size or s or 40
         kwargs["color"] = color
         kwargs["size"] = size
         settings = self._process_kwargs(kwargs)
-        for lat, lng in zip(lats, lngs):
+        for n in range(len(lats)):
             if marker:
-                self.marker(lat, lng, settings['color'])
+                kwgs = {
+                    'lat': lats[n],
+                    'lng': lngs[n],
+                    'color': settings['color'],
+                }
+                if titles:
+                    kwgs['title'] = titles[n]
+                self.marker(**kwgs)
             else:
-                self.circle(lat, lng, size, **settings)
+                self.circle(lats[n], lngs[n], size, **settings)
 
     def circle(self, lat, lng, radius, color=None, c=None, **kwargs):
         color = color or c
